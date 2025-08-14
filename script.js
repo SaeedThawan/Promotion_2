@@ -1,10 +1,13 @@
 document.addEventListener("DOMContentLoaded", function() {
     // رابط Web App الذي حصلت عليه من Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxppttFwtYoCNfa5hpDgAf_e4Rbh5pPxVjFNfxw7RRUKVY6rR8gt2KQqAjbKa97IEu/exec";
-    // معرّف ملف Google Sheets، يجب أن تستبدله بمعرف ملفك
+    // معرّف ملف Google Sheets
     const SPREADSHEET_ID = "YOUR_SPREADSHEET_ID_HERE";
     // النطاق الذي يحتوي على قائمة مساحات العمل في ورقة DataLists
     const WORKSPACE_RANGE = "DataLists!A2:A";
+    // النطاق الذي يحتوي على قائمة الإجراءات في ورقة DataLists
+    const ACTIONS_RANGE = "DataLists!B2:B";
+
 
     const form = document.getElementById('visitForm');
     const statusMessage = document.getElementById('statusMessage');
@@ -14,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const customerNameInput = document.getElementById('customerNameInput');
     const customersDatalist = document.getElementById('customersList');
     const submitBtn = document.getElementById('submitBtn');
-    const productTemplate = document.getElementById('product-item-template');
     
     let customersData = [];
     let allProductsData = [];
@@ -24,14 +26,18 @@ document.addEventListener("DOMContentLoaded", function() {
     Promise.all([
         fetch('sales_representatives.json').then(res => res.json()),
         fetch('customers_main.json').then(res => res.json()),
-        fetch('actions_list.json').then(res => res.json()),
+        // fetch('actions_list.json').then(res => res.json()), // لم نعد نستخدم هذا الملف
         fetch('products.json').then(res => res.json()),
         fetch('governorates.json').then(res => res.json()),
         // جلب قائمة مساحات العمل من Google Sheets
         fetch(`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&tq=SELECT%20A%20WHERE%20A%20is%20not%20null&range=${WORKSPACE_RANGE}`)
             .then(res => res.text())
+            .then(text => JSON.parse(text.substr(47).slice(0, -2)).table.rows.map(row => row.c[0].v)),
+        // جلب قائمة الإجراءات من Google Sheets
+        fetch(`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&tq=SELECT%20B%20WHERE%20B%20is%20not%20null&range=${ACTIONS_RANGE}`)
+            .then(res => res.text())
             .then(text => JSON.parse(text.substr(47).slice(0, -2)).table.rows.map(row => row.c[0].v))
-    ]).then(([reps, customers, actions, products, governorates, workspaces]) => {
+    ]).then(([reps, customers, products, governorates, workspaces, actions]) => {
         customersData = customers;
         allProductsData = products;
         
