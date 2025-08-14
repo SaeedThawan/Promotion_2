@@ -1,10 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
     // رابط Web App الذي حصلت عليه من Apps Script
-    // تم تحديث هذا الرابط بناءً على ما أرسلته
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxppttFwtYoCNfa5hpDgAf_e4Rbh5pPxVjFNfxw7RRUKVY6rR8gt2KQqAjbKa97IEu/exec";
     // معرّف ملف Google Sheets
-    // لا تنسَ استبدال هذا بمعرف ملف Google Sheets الخاص بك
-    const SPREADSHEET_ID = "YOUR_SPREADSHEET_ID_HERE";
+    const SPREADSHEET_ID = "135m99kTLyGXKmG9oxW765YXMp_6OtLy8O1x-PeG_G1U";
     // النطاق الذي يحتوي على قائمة مساحات العمل والإجراءات
     const WORKSPACE_RANGE = "DataLists!A2:A";
     const ACTIONS_RANGE = "DataLists!B2:B";
@@ -17,11 +15,14 @@ document.addEventListener("DOMContentLoaded", function() {
     const customerNameInput = document.getElementById('customerNameInput');
     const customersDatalist = document.getElementById('customersList');
     const submitBtn = document.getElementById('submitBtn');
+    const addProductBtn = document.getElementById('addProductBtn');
+    const productsContainer = document.getElementById('missingProductsContainer');
     
     let customersData = [];
     let allProductsData = [];
     let isSubmitting = false;
 
+    // جلب البيانات من ملفات JSON ومن Google Sheets
     Promise.all([
         fetch('sales_representatives.json').then(res => res.json()),
         fetch('customers_main.json').then(res => res.json()),
@@ -106,6 +107,32 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // إضافة منتج آخر
+    addProductBtn.addEventListener('click', function() {
+        const newItem = document.createElement('div');
+        newItem.className = 'missing-product-item';
+        newItem.innerHTML = `
+            <label>اختر المنتج:</label>
+            <select class="missingProduct" name="missingProduct" required></select>
+            <input type="hidden" class="missingProductCode" name="missingProductCode">
+            <input type="hidden" class="missingProductCategory" name="missingProductCategory">
+            <button type="button" class="remove-product-btn"><i class="fas fa-times"></i></button>
+        `;
+        productsContainer.appendChild(newItem);
+        const newSelect = newItem.querySelector('.missingProduct');
+        populateProductsDropdown(newSelect, allProductsData);
+    });
+
+    // إزالة منتج
+    productsContainer.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-product-btn') || e.target.closest('.remove-product-btn')) {
+            const itemToRemove = e.target.closest('.missing-product-item');
+            if (productsContainer.children.length > 1) {
+                itemToRemove.remove();
+            }
+        }
+    });
+
     customerNameInput.addEventListener('keyup', function() {
         const searchTerm = this.value.trim().toLowerCase();
         
@@ -131,7 +158,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
     
-    const productsContainer = document.getElementById('missingProductsContainer');
     productsContainer.addEventListener('change', function(e) {
         if (e.target.classList.contains('missingProduct')) {
             const selectedOption = e.target.options[e.target.selectedIndex];
@@ -145,6 +171,22 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
     });
+
+    // إضافة تقييم النجوم
+    starRatingContainer.addEventListener('click', function(e) {
+        if (e.target.classList.contains('star')) {
+            const value = e.target.dataset.value;
+            starRatingInput.value = value;
+            Array.from(starRatingContainer.children).forEach(star => {
+                if (parseInt(star.dataset.value) <= parseInt(value)) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+    });
+    
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
