@@ -193,42 +193,6 @@ document.addEventListener("DOMContentLoaded", function() {
         e.preventDefault();
         
         if (isSubmitting) return;
-
-        // ------------------ التحقق من القيود (معطلة للاختبار) ------------------
-        const visitTime = new Date(`${visitDateInput.value}T${visitTimeInput.value}:00`);
-        const exitTime = new Date(`${visitDateInput.value}T${exitTimeInput.value}:00`);
-
-        // // التحقق من وقت الإرسال
-        // const now = new Date();
-        // const nowTime = now.getHours() * 60 + now.getMinutes();
-        // const startOfDay = 8 * 60; // 8:00 صباحًا
-        // const endOfDay = 21 * 60;  // 9:00 مساءً
-        // if (nowTime < startOfDay || nowTime > endOfDay) {
-        //     statusMessage.textContent = 'يمكن إرسال النموذج فقط بين الساعة 8 صباحًا و 9 مساءً.';
-        //     statusMessage.className = 'status error';
-        //     isSubmitting = false;
-        //     submitBtn.disabled = false;
-        //     return;
-        // }
-
-        // // التحقق من مدة الزيارة
-        // if (exitTime <= visitTime) {
-        //     statusMessage.textContent = 'وقت الخروج يجب أن يكون بعد وقت الدخول.';
-        //     statusMessage.className = 'status error';
-        //     isSubmitting = false;
-        //     submitBtn.disabled = false;
-        //     return;
-        // }
-        
-        // // التحقق من أن مدة الزيارة لا تزيد عن 5 ساعات
-        // const durationInMinutes = (exitTime - visitTime) / (1000 * 60);
-        // if (durationInMinutes > 300) { // 5 ساعات = 300 دقيقة
-        //     statusMessage.textContent = 'مدة الزيارة لا يمكن أن تتجاوز 5 ساعات.';
-        //     statusMessage.className = 'status error';
-        //     isSubmitting = false;
-        //     submitBtn.disabled = false;
-        //     return;
-        // }
         
         isSubmitting = true;
         submitBtn.disabled = true;
@@ -272,12 +236,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 statusMessage.textContent = 'تم إرسال البيانات بنجاح!';
                 statusMessage.className = 'status success';
                 form.reset();
-            } else if (result.includes('Time constraint violation')) {
-                statusMessage.textContent = 'فشل الإرسال: يمكن إرسال النموذج فقط بين الساعة 8 صباحًا و 9 مساءً.';
-                statusMessage.className = 'status error';
-            } else if (result.includes('Duration constraint violation')) {
-                statusMessage.textContent = 'فشل الإرسال: مدة الزيارة لا يمكن أن تتجاوز 5 ساعات.';
-                statusMessage.className = 'status error';
             } else {
                 throw new Error('فشل الإرسال.');
             }
