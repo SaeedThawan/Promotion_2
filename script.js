@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const productsContainer = document.getElementById('missingProductsContainer');
     const visitDateInput = document.getElementById('visitDate');
     const visitTimeInput = document.getElementById('visitTime');
-    const exitTimeInput = document.getElementById('exitTime');
+    const exitTimeInput = document = document.getElementById('exitTime');
 
     let customersData = [];
     let allProductsData = [];
@@ -135,15 +135,18 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // ------------------ الكود الجديد للبحث الذكي عن العملاء ------------------
     customerNameInput.addEventListener('keyup', function() {
         const searchTerm = this.value.trim().toLowerCase();
         
         if (searchTerm.length > 0) {
+            // البحث عن أي تطابق في أي جزء من الاسم
             const filteredCustomers = customersData.filter(customer => 
                 customer.Customer_Name_AR.toLowerCase().includes(searchTerm)
             );
             populateCustomersDatalist(customersDatalist, filteredCustomers);
         } else {
+            // عرض كل العملاء إذا كان حقل البحث فارغاً
             populateCustomersDatalist(customersDatalist, customersData);
         }
         
