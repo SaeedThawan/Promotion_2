@@ -73,13 +73,14 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
+    // هذا هو الجزء الذي تم تعديله
     function populateCheckboxes(containerId, data, prefix) {
         const container = document.getElementById(containerId);
         if (container) {
             container.innerHTML = '';
             data.forEach((item, index) => {
                 const label = document.createElement('label');
-                label.innerHTML = `<input type="checkbox" name="${prefix}" value="${item}"> ${item}`;
+                label.innerHTML = `<input type="checkbox" name="${prefix}${index + 1}" value="${item}"> ${item}`;
                 container.appendChild(label);
             });
         }
@@ -222,21 +223,12 @@ document.addEventListener("DOMContentLoaded", function() {
         formData.append('missingProduct', missingProductsNames.join(','));
         formData.append('missingProductCode', missingProductsCodes.join(','));
         formData.append('missingProductCategory', missingProductsCategories.join(','));
-
         
+        // إزالة الأسطر القديمة التي كانت تسبب الترتيب الخاطئ
         const selectedWorkspaces = Array.from(document.querySelectorAll('#workspaceStatus input:checked')).map(cb => cb.value);
-        if (selectedWorkspaces.length > 0) {
-            selectedWorkspaces.forEach((workspace, index) => {
-                formData.append(`workspace${index + 1}`, workspace);
-            });
-        }
-        
         const selectedActions = Array.from(document.querySelectorAll('#actionsTaken input:checked')).map(cb => cb.value);
-        if (selectedActions.length > 0) {
-            selectedActions.forEach((action, index) => {
-                formData.append(`action${index + 1}`, action);
-            });
-        }
+        
+        // الكود الجديد لا يعتمد على هذه الأسطر، بل يعتمد على أسماء المدخلات الصحيحة
         
         fetch(SCRIPT_URL, {
             method: 'POST',
