@@ -57,7 +57,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const today = new Date().toISOString().split('T')[0];
     visitDateInput.setAttribute('min', today);
     
-    // ------------------ دالة Debounce الجديدة ------------------
     function debounce(func, delay) {
         let timeoutId;
         return function(...args) {
@@ -146,7 +145,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // ------------------ الكود الجديد للبحث الذكي عن العملاء ------------------
     const searchCustomers = () => {
         const searchTerm = customerNameInput.value.trim().toLowerCase();
         
@@ -172,7 +170,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     };
     
-    // تطبيق debounce على دالة البحث
     customerNameInput.addEventListener('keyup', debounce(searchCustomers, 300));
     
     productsContainer.addEventListener('change', function(e) {
@@ -189,11 +186,15 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // ------------------ الكود المُحدَّث للنجوم ------------------
+    const stars = starRatingContainer.querySelectorAll('span');
+    
     starRatingContainer.addEventListener('click', function(e) {
-        if (e.target.classList.contains('star')) {
+        if (e.target.tagName === 'SPAN') {
             const value = e.target.dataset.value;
             starRatingInput.value = value;
-            Array.from(starRatingContainer.children).forEach(star => {
+            
+            stars.forEach(star => {
                 if (parseInt(star.dataset.value) <= parseInt(value)) {
                     star.classList.add('active');
                 } else {
@@ -202,8 +203,32 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }
     });
+
+    starRatingContainer.addEventListener('mouseover', function(e) {
+        if (e.target.tagName === 'SPAN') {
+            const value = e.target.dataset.value;
+            stars.forEach(star => {
+                if (parseInt(star.dataset.value) <= parseInt(value)) {
+                    star.style.color = 'var(--rating-color)';
+                } else {
+                    star.style.color = '';
+                }
+            });
+        }
+    });
+
+    starRatingContainer.addEventListener('mouseout', function(e) {
+        const activeValue = starRatingInput.value;
+        stars.forEach(star => {
+            if (parseInt(star.dataset.value) <= parseInt(activeValue)) {
+                star.style.color = 'var(--rating-color)';
+            } else {
+                star.style.color = '';
+            }
+        });
+    });
+    // ------------------ نهاية التعديل على النجوم ------------------
     
-    // دالة إرسال النموذج بعد الحصول على الموقع
     function submitFormData(latitude, longitude) {
         isSubmitting = true;
         submitBtn.disabled = true;
@@ -277,7 +302,6 @@ document.addEventListener("DOMContentLoaded", function() {
         
         if (isSubmitting) return;
 
-        // ------------------ التحقق من القيود (مفعل الآن) ------------------
         const visitTime = new Date(`${visitDateInput.value}T${visitTimeInput.value}:00`);
         const exitTime = new Date(`${visitDateInput.value}T${exitTimeInput.value}:00`);
         
@@ -318,16 +342,13 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
         
-        // ------------------ طلب الموقع قبل الإرسال ------------------
         if ("geolocation" in navigator) {
             statusMessage.textContent = 'جاري الحصول على الموقع...';
             statusMessage.className = 'status loading';
 
             navigator.geolocation.getCurrentPosition(function(position) {
-                // النجاح: تم الحصول على الموقع، يتم إرسال النموذج الآن
                 submitFormData(position.coords.latitude, position.coords.longitude);
             }, function(error) {
-                // الفشل: المستخدم رفض أو حدث خطأ، يتم إرسال النموذج بدون الموقع
                 console.error("Error getting location: ", error);
                 submitFormData(null, null);
             }, {
@@ -336,7 +357,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 maximumAge: 0
             });
         } else {
-            // المتصفح لا يدعم Geolocation، يتم إرسال النموذج بدون الموقع
             submitFormData(null, null);
         }
     });
