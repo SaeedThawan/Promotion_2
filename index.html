@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج تقرير الزيارة</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="form-title">نموذج تقرير الزيارة</h1>
+        <form id="visitForm">
+            <div class="section">
+                <h2>معلومات أساسية</h2>
+                <div class="form-group">
+                    <label for="dataEntryName">اسم مدخل البيانات:</label>
+                    <input type="text" id="dataEntryName" name="dataEntryName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="salesRepName">اسم المروج:</label>
+                    <select id="salesRepName" name="salesRepName" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="governorate">المحافظة:</label>
+                    <select id="governorate" name="governorate" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="region">المنطقة:</label>
+                    <input type="text" id="region" name="region" required>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>معلومات الزيارة</h2>
+                <div class="form-group">
+                    <label for="customerNameInput">اسم العميل:</label>
+                    <div class="customer-search-container">
+                        <input list="customersList" id="customerNameInput" name="customerName" placeholder="ابدأ بكتابة اسم العميل..." required>
+                        <datalist id="customersList"></datalist>
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    <input type="hidden" id="customerCodeHidden" name="customerCode">
+                    <div id="customerDetails" class="customer-details"></div>
+                </div>
+            
+                <div class="form-group">
+                    <label for="visitDate">تاريخ الزيارة:</label>
+                    <input type="date" id="visitDate" name="visitDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="visitTime">وقت الدخول:</label>
+                    <input type="time" id="visitTime" name="visitTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="exitTime">وقت الخروج:</label>
+                    <input type="time" id="exitTime" name="exitTime" required>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>تقييمات وملاحظات</h2>
+                <div class="form-group">
+                    <label for="actionsTaken">قائمة الأعمال عند العميل:</label>
+                    <select id="actionsTaken" name="actionsTaken" required></select>
+                </div>
+            
+                <div class="form-group">
+                    <label for="workspaceStatus">مساحة العمل:</label>
+                    <select id="workspaceStatus" name="workspaceStatus" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label>تقييم حالة العرض في المتجر:</label>
+                    <div class="star-rating">
+                        <i class="far fa-star" data-rating="1"></i>
+                        <i class="far fa-star" data-rating="2"></i>
+                        <i class="far fa-star" data-rating="3"></i>
+                        <i class="far fa-star" data-rating="4"></i>
+                        <i class="far fa-star" data-rating="5"></i>
+                    </div>
+                    <input type="hidden" id="storeRating" name="storeRating" required>
+                </div>
+            
+                <div class="form-group">
+                    <label for="suggestions">المقترحات والتحسينات:</label>
+                    <textarea id="suggestions" name="suggestions"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>المنتجات الناقصة</h2>
+                <div id="missingProductsContainer">
+                    <div class="missing-product-item">
+                        <label>اختر المنتج:</label>
+                        <select class="missingProduct" name="missingProduct" required></select>
+                        <input type="hidden" class="missingProductCode" name="missingProductCode">
+                        <input type="hidden" class="missingProductCategory" name="missingProductCategory"> 
+                    </div>
+                </div>
+                <button type="button" id="addProductBtn" class="add-button">إضافة منتج آخر</button>
+            </div>
+
+            <div class="section">
+                <h2>المرفقات</h2>
+                <div class="form-group">
+                    <label for="attachment">إضافة مرفق:</label>
+                    <input type="file" id="attachment" name="attachment">
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="submit-button">إرسال البيانات</button>
+            <div id="statusMessage"></div>
+        </form>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
