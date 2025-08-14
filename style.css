@@ -128,7 +128,6 @@ textarea::placeholder {
     line-height: 1.6;
 }
 
-/* Missing Products Section */
 #missingProductsContainer {
     border: 1px dashed var(--border-color);
     border-radius: 8px;
@@ -195,13 +194,18 @@ textarea::placeholder {
     background-color: #0056b3;
 }
 
-/* ------------------ التعديل على النجوم ------------------ */
 .star-rating {
-    display: inline-flex;
+    display: flex;
     flex-direction: row-reverse;
+    justify-content: flex-end;
     font-size: 2.2rem;
     cursor: pointer;
-    unicode-bidi: bidi-override;
+}
+
+.star-rating > span {
+    padding: 0 4px;
+    color: #adb5bd;
+    transition: color 0.2s;
 }
 
 .star-rating > span:hover,
@@ -214,14 +218,6 @@ textarea::placeholder {
     color: var(--rating-color);
 }
 
-.star-rating > span {
-    padding: 0 4px;
-    color: #adb5bd;
-    transition: color 0.2s;
-}
-/* ------------------ نهاية التعديل على النجوم ------------------ */
-
-/* ------------------ تعديل زر الإرسال ------------------ */
 .btn-submit {
     display: block;
     width: 100%;
@@ -248,7 +244,6 @@ textarea::placeholder {
     cursor: not-allowed;
     box-shadow: none;
 }
-/* ------------------ نهاية تعديل زر الإرسال ------------------ */
 
 .status {
     text-align: center;
