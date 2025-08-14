@@ -1,13 +1,13 @@
 document.addEventListener("DOMContentLoaded", function() {
     // رابط Web App الذي حصلت عليه من Apps Script
+    // تم تحديث هذا الرابط بناءً على ما أرسلته
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxppttFwtYoCNfa5hpDgAf_e4Rbh5pPxVjFNfxw7RRUKVY6rR8gt2KQqAjbKa97IEu/exec";
     // معرّف ملف Google Sheets
+    // لا تنسَ استبدال هذا بمعرف ملف Google Sheets الخاص بك
     const SPREADSHEET_ID = "YOUR_SPREADSHEET_ID_HERE";
-    // النطاق الذي يحتوي على قائمة مساحات العمل في ورقة DataLists
+    // النطاق الذي يحتوي على قائمة مساحات العمل والإجراءات
     const WORKSPACE_RANGE = "DataLists!A2:A";
-    // النطاق الذي يحتوي على قائمة الإجراءات في ورقة DataLists
     const ACTIONS_RANGE = "DataLists!B2:B";
-
 
     const form = document.getElementById('visitForm');
     const statusMessage = document.getElementById('statusMessage');
@@ -22,18 +22,14 @@ document.addEventListener("DOMContentLoaded", function() {
     let allProductsData = [];
     let isSubmitting = false;
 
-    // جلب البيانات من ملفات JSON ومن Google Sheets
     Promise.all([
         fetch('sales_representatives.json').then(res => res.json()),
         fetch('customers_main.json').then(res => res.json()),
-        // fetch('actions_list.json').then(res => res.json()), // لم نعد نستخدم هذا الملف
         fetch('products.json').then(res => res.json()),
         fetch('governorates.json').then(res => res.json()),
-        // جلب قائمة مساحات العمل من Google Sheets
         fetch(`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&tq=SELECT%20A%20WHERE%20A%20is%20not%20null&range=${WORKSPACE_RANGE}`)
             .then(res => res.text())
             .then(text => JSON.parse(text.substr(47).slice(0, -2)).table.rows.map(row => row.c[0].v)),
-        // جلب قائمة الإجراءات من Google Sheets
         fetch(`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&tq=SELECT%20B%20WHERE%20B%20is%20not%20null&range=${ACTIONS_RANGE}`)
             .then(res => res.text())
             .then(text => JSON.parse(text.substr(47).slice(0, -2)).table.rows.map(row => row.c[0].v))
@@ -42,8 +38,8 @@ document.addEventListener("DOMContentLoaded", function() {
         allProductsData = products;
         
         populateDropdown('salesRepName', reps);
-        populateDropdown('actionsTaken', actions);
-        populateDropdown('workspaceStatus', workspaces);
+        populateCheckboxes('workspaceStatus', workspaces, 'workspace');
+        populateCheckboxes('actionsTaken', actions, 'action');
         populateDropdown('governorate', governorates);
         
         const productSelects = document.querySelectorAll('.missingProduct');
@@ -56,19 +52,16 @@ document.addEventListener("DOMContentLoaded", function() {
         statusMessage.className = 'status error';
     });
 
-    // دالة لملء القوائم المنسدلة البسيطة
     function populateDropdown(selectId, data) {
         const select = document.getElementById(selectId);
         if (select) {
             select.innerHTML = ''; 
-            if (!select.hasAttribute('multiple')) {
-                const defaultOption = document.createElement('option');
-                defaultOption.value = "";
-                defaultOption.textContent = "اختر...";
-                defaultOption.disabled = true;
-                defaultOption.selected = true;
-                select.appendChild(defaultOption);
-            }
+            const defaultOption = document.createElement('option');
+            defaultOption.value = "";
+            defaultOption.textContent = "اختر...";
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            select.appendChild(defaultOption);
 
             data.forEach(item => {
                 const option = document.createElement('option');
@@ -79,7 +72,18 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    // دالة لملء قائمة المنتجات
+    function populateCheckboxes(containerId, data, prefix) {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = '';
+            data.forEach((item, index) => {
+                const label = document.createElement('label');
+                label.innerHTML = `<input type="checkbox" name="${prefix}" value="${item}"> ${item}`;
+                container.appendChild(label);
+            });
+        }
+    }
+    
     function populateProductsDropdown(selectElement, productsData) {
         selectElement.innerHTML = '<option value="" disabled selected>اختر منتج</option>';
         productsData.forEach(product => {
@@ -92,7 +96,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // دالة لملء قائمة العملاء الذكية
     function populateCustomersDatalist(listElement, customersList) {
         listElement.innerHTML = '';
         customersList.forEach(customer => {
@@ -103,7 +106,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // منطق البحث الديناميكي عن العملاء
     customerNameInput.addEventListener('keyup', function() {
         const searchTerm = this.value.trim().toLowerCase();
         
@@ -129,7 +131,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
     
-    // ربط كود المنتج واسمه وفئته بحقل الإدخال المخفي عند التغيير
     const productsContainer = document.getElementById('missingProductsContainer');
     productsContainer.addEventListener('change', function(e) {
         if (e.target.classList.contains('missingProduct')) {
@@ -145,7 +146,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // دالة إرسال النموذج
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -158,7 +158,6 @@ document.addEventListener("DOMContentLoaded", function() {
         
         const formData = new FormData(form);
         
-        // تجهيز المنتجات الناقصة لطلب واحد
         const missingProductsNames = [];
         const missingProductsCodes = [];
         const missingProductsCategories = [];
@@ -183,15 +182,20 @@ document.addEventListener("DOMContentLoaded", function() {
         formData.append('missingProductCategory', missingProductsCategories.join(','));
 
         
-        // تجهيز مساحات العمل لطلب واحد
-        const selectedWorkspaces = Array.from(document.getElementById('workspaceStatus').selectedOptions).map(option => option.value);
+        const selectedWorkspaces = Array.from(document.querySelectorAll('#workspaceStatus input:checked')).map(cb => cb.value);
         if (selectedWorkspaces.length > 0) {
-            formData.delete('workspaceStatus');
             selectedWorkspaces.forEach((workspace, index) => {
-                formData.append(`مساحة العمل ${index + 1}`, workspace);
+                formData.append(`workspace${index + 1}`, workspace);
             });
         }
-
+        
+        const selectedActions = Array.from(document.querySelectorAll('#actionsTaken input:checked')).map(cb => cb.value);
+        if (selectedActions.length > 0) {
+            selectedActions.forEach((action, index) => {
+                formData.append(`action${index + 1}`, action);
+            });
+        }
+        
         fetch(SCRIPT_URL, {
             method: 'POST',
             body: formData
