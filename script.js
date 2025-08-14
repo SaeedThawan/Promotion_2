@@ -56,6 +56,17 @@ document.addEventListener("DOMContentLoaded", function() {
     // Set min date for visitDate input
     const today = new Date().toISOString().split('T')[0];
     visitDateInput.setAttribute('min', today);
+    
+    // ------------------ دالة Debounce الجديدة ------------------
+    function debounce(func, delay) {
+        let timeoutId;
+        return function(...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
+        };
+    }
 
     function populateDropdown(selectId, data) {
         const select = document.getElementById(selectId);
@@ -77,7 +88,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    // الدالة المُعدَّلة لحل مشكلة مربعات الاختيار
     function populateCheckboxes(containerId, data, prefix) {
         const container = document.getElementById(containerId);
         if (container) {
@@ -137,21 +147,19 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // ------------------ الكود الجديد للبحث الذكي عن العملاء ------------------
-    customerNameInput.addEventListener('keyup', function() {
-        const searchTerm = this.value.trim().toLowerCase();
+    const searchCustomers = () => {
+        const searchTerm = customerNameInput.value.trim().toLowerCase();
         
         if (searchTerm.length > 0) {
-            // البحث عن أي تطابق في أي جزء من الاسم
             const filteredCustomers = customersData.filter(customer => 
                 customer.Customer_Name_AR.toLowerCase().includes(searchTerm)
             );
             populateCustomersDatalist(customersDatalist, filteredCustomers);
         } else {
-            // عرض كل العملاء إذا كان حقل البحث فارغاً
             populateCustomersDatalist(customersDatalist, customersData);
         }
         
-        const selectedOption = Array.from(customersDatalist.options).find(option => option.value === this.value);
+        const selectedOption = Array.from(customersDatalist.options).find(option => option.value === customerNameInput.value);
         if (selectedOption) {
             const customerCode = selectedOption.getAttribute('data-code');
             const customerName = selectedOption.value;
@@ -162,7 +170,10 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('customerCodeHidden').value = '';
             customerDetailsDiv.style.display = 'none';
         }
-    });
+    };
+    
+    // تطبيق debounce على دالة البحث
+    customerNameInput.addEventListener('keyup', debounce(searchCustomers, 300));
     
     productsContainer.addEventListener('change', function(e) {
         if (e.target.classList.contains('missingProduct')) {
