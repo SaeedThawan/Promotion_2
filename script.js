@@ -188,12 +188,56 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
     
-
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
         if (isSubmitting) return;
+
+        // ------------------ التحقق من القيود (مفعل الآن) ------------------
+        const visitTime = new Date(`${visitDateInput.value}T${visitTimeInput.value}:00`);
+        const exitTime = new Date(`${visitDateInput.value}T${exitTimeInput.value}:00`);
         
+        // التحقق من مدة الزيارة (وقت الخروج يجب أن يكون بعد الدخول)
+        if (exitTime <= visitTime) {
+            statusMessage.textContent = 'وقت الخروج يجب أن يكون بعد وقت الدخول.';
+            statusMessage.className = 'status error';
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            return;
+        }
+
+        // التحقق من أن مدة الزيارة لا تزيد عن 5 ساعات
+        const durationInMinutes = (exitTime - visitTime) / (1000 * 60);
+        if (durationInMinutes > 300) { // 5 ساعات = 300 دقيقة
+            statusMessage.textContent = 'مدة الزيارة لا يمكن أن تتجاوز 5 ساعات.';
+            statusMessage.className = 'status error';
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            return;
+        }
+
+        // التحقق من اختيار مساحة العمل
+        const workspaceCheckboxes = document.querySelectorAll('#workspaceStatus input[type="checkbox"]');
+        const isWorkspaceSelected = Array.from(workspaceCheckboxes).some(checkbox => checkbox.checked);
+        if (!isWorkspaceSelected) {
+            statusMessage.textContent = 'الرجاء اختيار حالة مساحة العمل.';
+            statusMessage.className = 'status error';
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            return;
+        }
+
+        // التحقق من اختيار الإجراءات المتخذة
+        const actionsCheckboxes = document.querySelectorAll('#actionsTaken input[type="checkbox"]');
+        const isActionSelected = Array.from(actionsCheckboxes).some(checkbox => checkbox.checked);
+        if (!isActionSelected) {
+            statusMessage.textContent = 'الرجاء اختيار إجراء واحد على الأقل.';
+            statusMessage.className = 'status error';
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            return;
+        }
+
         isSubmitting = true;
         submitBtn.disabled = true;
         
@@ -236,6 +280,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 statusMessage.textContent = 'تم إرسال البيانات بنجاح!';
                 statusMessage.className = 'status success';
                 form.reset();
+            } else if (result.includes('Duration constraint violation')) {
+                statusMessage.textContent = 'فشل الإرسال: مدة الزيارة لا يمكن أن تتجاوز 5 ساعات.';
+                statusMessage.className = 'status error';
+            } else if (result.includes('Exit time must be after visit time')) {
+                statusMessage.textContent = 'فشل الإرسال: وقت الخروج يجب أن يكون بعد وقت الدخول.';
+                statusMessage.className = 'status error';
             } else {
                 throw new Error('فشل الإرسال.');
             }
