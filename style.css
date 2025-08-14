@@ -176,8 +176,13 @@ textarea::placeholder {
     background-color: #c82333;
 }
 
-#addProductBtn {
-    background-color: var(--primary-color);
+/* Updated Add Button */
+.btn-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #007bff;
     color: #fff;
     border: none;
     padding: 12px 20px;
@@ -185,14 +190,16 @@ textarea::placeholder {
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, box-shadow 0.3s;
     width: auto;
     margin-top: 10px;
 }
 
-#addProductBtn:hover {
+.btn-add:hover {
     background-color: #0056b3;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
 }
+
 
 .star-rating {
     display: flex;
@@ -218,25 +225,29 @@ textarea::placeholder {
     color: var(--rating-color);
 }
 
+/* Updated Submit Button */
 .btn-submit {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     width: 100%;
     padding: 15px;
     margin-top: 25px;
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s, box-shadow 0.3s;
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+    transition: transform 0.2s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
 }
 
 .btn-submit:hover {
-    background-color: #0056b3;
-    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
 }
 
 .btn-submit:disabled {
