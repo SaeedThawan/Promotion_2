@@ -1,9 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // رابط Web App الذي حصلت عليه من Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxppttFwtYoCNfa5hpDgAf_e4Rbh5pPxVjFNfxw7RRUKVY6rR8gt2KQqAjbKa97IEu/exec";
-    // معرّف ملف Google Sheets
     const SPREADSHEET_ID = "135m99kTLyGXKmG9oxW765YXMp_6OtLy8O1x-PeG_G1U";
-    // النطاق الذي يحتوي على قائمة مساحات العمل والإجراءات
     const WORKSPACE_RANGE = "DataLists!A2:A";
     const ACTIONS_RANGE = "DataLists!B2:B";
 
@@ -17,12 +14,15 @@ document.addEventListener("DOMContentLoaded", function() {
     const submitBtn = document.getElementById('submitBtn');
     const addProductBtn = document.getElementById('addProductBtn');
     const productsContainer = document.getElementById('missingProductsContainer');
-    
+    const visitDateInput = document.getElementById('visitDate');
+    const visitTimeInput = document.getElementById('visitTime');
+    const exitTimeInput = document.getElementById('exitTime');
+
     let customersData = [];
     let allProductsData = [];
     let isSubmitting = false;
 
-    // جلب البيانات من ملفات JSON ومن Google Sheets
+    // Fetch all required data
     Promise.all([
         fetch('sales_representatives.json').then(res => res.json()),
         fetch('customers_main.json').then(res => res.json()),
@@ -52,6 +52,10 @@ document.addEventListener("DOMContentLoaded", function() {
         statusMessage.textContent = 'حدث خطأ في تحميل البيانات الأساسية.';
         statusMessage.className = 'status error';
     });
+    
+    // Set min date for visitDate input
+    const today = new Date().toISOString().split('T')[0];
+    visitDateInput.setAttribute('min', today);
 
     function populateDropdown(selectId, data) {
         const select = document.getElementById(selectId);
@@ -73,7 +77,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    // هذا هو الجزء الذي تم تعديله
     function populateCheckboxes(containerId, data, prefix) {
         const container = document.getElementById(containerId);
         if (container) {
@@ -108,7 +111,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // إضافة منتج آخر
     addProductBtn.addEventListener('click', function() {
         const newItem = document.createElement('div');
         newItem.className = 'missing-product-item';
@@ -124,7 +126,6 @@ document.addEventListener("DOMContentLoaded", function() {
         populateProductsDropdown(newSelect, allProductsData);
     });
 
-    // إزالة منتج
     productsContainer.addEventListener('click', function(e) {
         if (e.target.classList.contains('remove-product-btn') || e.target.closest('.remove-product-btn')) {
             const itemToRemove = e.target.closest('.missing-product-item');
@@ -173,7 +174,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // إضافة تقييم النجوم
     starRatingContainer.addEventListener('click', function(e) {
         if (e.target.classList.contains('star')) {
             const value = e.target.dataset.value;
@@ -193,6 +193,43 @@ document.addEventListener("DOMContentLoaded", function() {
         e.preventDefault();
         
         if (isSubmitting) return;
+
+        // ------------------ التحقق من القيود الجديدة ------------------
+        const visitTime = new Date(`${visitDateInput.value}T${visitTimeInput.value}:00`);
+        const exitTime = new Date(`${visitDateInput.value}T${exitTimeInput.value}:00`);
+        const now = new Date();
+        const nowTime = now.getHours() * 60 + now.getMinutes();
+        const startOfDay = 8 * 60; // 8:00 صباحًا
+        const endOfDay = 21 * 60;  // 9:00 مساءً
+
+        // التحقق من وقت الإرسال
+        if (nowTime < startOfDay || nowTime > endOfDay) {
+            statusMessage.textContent = 'يمكن إرسال النموذج فقط بين الساعة 8 صباحًا و 9 مساءً.';
+            statusMessage.className = 'status error';
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            return;
+        }
+
+        // التحقق من مدة الزيارة
+        if (exitTime <= visitTime) {
+            statusMessage.textContent = 'وقت الخروج يجب أن يكون بعد وقت الدخول.';
+            statusMessage.className = 'status error';
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            return;
+        }
+        
+        // التحقق من أن مدة الزيارة لا تزيد عن 5 ساعات
+        const durationInMinutes = (exitTime - visitTime) / (1000 * 60);
+        if (durationInMinutes > 300) { // 5 ساعات = 300 دقيقة
+            statusMessage.textContent = 'مدة الزيارة لا يمكن أن تتجاوز 5 ساعات.';
+            statusMessage.className = 'status error';
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            return;
+        }
+        
         isSubmitting = true;
         submitBtn.disabled = true;
         
@@ -224,11 +261,6 @@ document.addEventListener("DOMContentLoaded", function() {
         formData.append('missingProductCode', missingProductsCodes.join(','));
         formData.append('missingProductCategory', missingProductsCategories.join(','));
         
-        // إزالة الأسطر القديمة التي كانت تسبب الترتيب الخاطئ
-        const selectedWorkspaces = Array.from(document.querySelectorAll('#workspaceStatus input:checked')).map(cb => cb.value);
-        const selectedActions = Array.from(document.querySelectorAll('#actionsTaken input:checked')).map(cb => cb.value);
-        
-        // الكود الجديد لا يعتمد على هذه الأسطر، بل يعتمد على أسماء المدخلات الصحيحة
         
         fetch(SCRIPT_URL, {
             method: 'POST',
@@ -240,6 +272,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 statusMessage.textContent = 'تم إرسال البيانات بنجاح!';
                 statusMessage.className = 'status success';
                 form.reset();
+            } else if (result.includes('Time constraint violation')) {
+                statusMessage.textContent = 'فشل الإرسال: يمكن إرسال النموذج فقط بين الساعة 8 صباحًا و 9 مساءً.';
+                statusMessage.className = 'status error';
+            } else if (result.includes('Duration constraint violation')) {
+                statusMessage.textContent = 'فشل الإرسال: مدة الزيارة لا يمكن أن تتجاوز 5 ساعات.';
+                statusMessage.className = 'status error';
             } else {
                 throw new Error('فشل الإرسال.');
             }
