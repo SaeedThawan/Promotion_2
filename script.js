@@ -186,7 +186,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // ------------------ الكود المُحدَّث للنجوم ------------------
     const stars = starRatingContainer.querySelectorAll('span');
     
     starRatingContainer.addEventListener('click', function(e) {
@@ -227,7 +226,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     });
-    // ------------------ نهاية التعديل على النجوم ------------------
     
     function submitFormData(latitude, longitude) {
         isSubmitting = true;
