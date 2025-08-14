@@ -188,56 +188,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
     
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        if (isSubmitting) return;
-
-        // ------------------ التحقق من القيود (مفعل الآن) ------------------
-        const visitTime = new Date(`${visitDateInput.value}T${visitTimeInput.value}:00`);
-        const exitTime = new Date(`${visitDateInput.value}T${exitTimeInput.value}:00`);
-        
-        // التحقق من مدة الزيارة (وقت الخروج يجب أن يكون بعد الدخول)
-        if (exitTime <= visitTime) {
-            statusMessage.textContent = 'وقت الخروج يجب أن يكون بعد وقت الدخول.';
-            statusMessage.className = 'status error';
-            isSubmitting = false;
-            submitBtn.disabled = false;
-            return;
-        }
-
-        // التحقق من أن مدة الزيارة لا تزيد عن 5 ساعات
-        const durationInMinutes = (exitTime - visitTime) / (1000 * 60);
-        if (durationInMinutes > 300) { // 5 ساعات = 300 دقيقة
-            statusMessage.textContent = 'مدة الزيارة لا يمكن أن تتجاوز 5 ساعات.';
-            statusMessage.className = 'status error';
-            isSubmitting = false;
-            submitBtn.disabled = false;
-            return;
-        }
-
-        // التحقق من اختيار مساحة العمل
-        const workspaceCheckboxes = document.querySelectorAll('#workspaceStatus input[type="checkbox"]');
-        const isWorkspaceSelected = Array.from(workspaceCheckboxes).some(checkbox => checkbox.checked);
-        if (!isWorkspaceSelected) {
-            statusMessage.textContent = 'الرجاء اختيار حالة مساحة العمل.';
-            statusMessage.className = 'status error';
-            isSubmitting = false;
-            submitBtn.disabled = false;
-            return;
-        }
-
-        // التحقق من اختيار الإجراءات المتخذة
-        const actionsCheckboxes = document.querySelectorAll('#actionsTaken input[type="checkbox"]');
-        const isActionSelected = Array.from(actionsCheckboxes).some(checkbox => checkbox.checked);
-        if (!isActionSelected) {
-            statusMessage.textContent = 'الرجاء اختيار إجراء واحد على الأقل.';
-            statusMessage.className = 'status error';
-            isSubmitting = false;
-            submitBtn.disabled = false;
-            return;
-        }
-
+    // دالة إرسال النموذج بعد الحصول على الموقع
+    function submitFormData(latitude, longitude) {
         isSubmitting = true;
         submitBtn.disabled = true;
         
@@ -245,6 +197,10 @@ document.addEventListener("DOMContentLoaded", function() {
         statusMessage.className = 'status loading';
         
         const formData = new FormData(form);
+        if (latitude !== null) {
+            formData.append('latitude', latitude);
+            formData.append('longitude', longitude);
+        }
         
         const missingProductsNames = [];
         const missingProductsCodes = [];
@@ -299,5 +255,74 @@ document.addEventListener("DOMContentLoaded", function() {
             isSubmitting = false;
             submitBtn.disabled = false;
         });
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (isSubmitting) return;
+
+        // ------------------ التحقق من القيود (مفعل الآن) ------------------
+        const visitTime = new Date(`${visitDateInput.value}T${visitTimeInput.value}:00`);
+        const exitTime = new Date(`${visitDateInput.value}T${exitTimeInput.value}:00`);
+        
+        if (exitTime <= visitTime) {
+            statusMessage.textContent = 'وقت الخروج يجب أن يكون بعد وقت الدخول.';
+            statusMessage.className = 'status error';
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            return;
+        }
+
+        const durationInMinutes = (exitTime - visitTime) / (1000 * 60);
+        if (durationInMinutes > 300) {
+            statusMessage.textContent = 'مدة الزيارة لا يمكن أن تتجاوز 5 ساعات.';
+            statusMessage.className = 'status error';
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            return;
+        }
+
+        const workspaceCheckboxes = document.querySelectorAll('#workspaceStatus input[type="checkbox"]');
+        const isWorkspaceSelected = Array.from(workspaceCheckboxes).some(checkbox => checkbox.checked);
+        if (!isWorkspaceSelected) {
+            statusMessage.textContent = 'الرجاء اختيار حالة مساحة العمل.';
+            statusMessage.className = 'status error';
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            return;
+        }
+
+        const actionsCheckboxes = document.querySelectorAll('#actionsTaken input[type="checkbox"]');
+        const isActionSelected = Array.from(actionsCheckboxes).some(checkbox => checkbox.checked);
+        if (!isActionSelected) {
+            statusMessage.textContent = 'الرجاء اختيار إجراء واحد على الأقل.';
+            statusMessage.className = 'status error';
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            return;
+        }
+        
+        // ------------------ طلب الموقع قبل الإرسال ------------------
+        if ("geolocation" in navigator) {
+            statusMessage.textContent = 'جاري الحصول على الموقع...';
+            statusMessage.className = 'status loading';
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+                // النجاح: تم الحصول على الموقع، يتم إرسال النموذج الآن
+                submitFormData(position.coords.latitude, position.coords.longitude);
+            }, function(error) {
+                // الفشل: المستخدم رفض أو حدث خطأ، يتم إرسال النموذج بدون الموقع
+                console.error("Error getting location: ", error);
+                submitFormData(null, null);
+            }, {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            });
+        } else {
+            // المتصفح لا يدعم Geolocation، يتم إرسال النموذج بدون الموقع
+            submitFormData(null, null);
+        }
     });
 });
