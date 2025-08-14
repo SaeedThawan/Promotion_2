@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const productsContainer = document.getElementById('missingProductsContainer');
     const visitDateInput = document.getElementById('visitDate');
     const visitTimeInput = document.getElementById('visitTime');
-    const exitTimeInput = document = document.getElementById('exitTime');
+    const exitTimeInput = document.getElementById('exitTime');
 
     let customersData = [];
     let allProductsData = [];
@@ -77,13 +77,14 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
+    // الدالة المُعدَّلة لحل مشكلة مربعات الاختيار
     function populateCheckboxes(containerId, data, prefix) {
         const container = document.getElementById(containerId);
         if (container) {
             container.innerHTML = '';
             data.forEach((item, index) => {
                 const label = document.createElement('label');
-                label.innerHTML = `<input type="checkbox" name="${prefix}${index + 1}" value="${item}"> ${item}`;
+                label.innerHTML = `<input type="checkbox" name="${prefix}${index + 1}" value="${item}"><span>${item}</span>`;
                 container.appendChild(label);
             });
         }
