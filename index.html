@@ -1,257 +1,129 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>نموذج تقرير الزيارة</title>
-
-    <link rel="stylesheet" href="style.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج تقرير الزيارة</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-
 <body>
-
-    <div class="container">
-
-        <h1 class="form-title">نموذج تقرير الزيارة</h1>
-
-        <form id="visitForm">
-
-            <div class="section">
-
-                <h2>معلومات أساسية</h2>
-
-                <div class="form-group">
-
-                    <label for="dataEntryName">اسم مدخل البيانات:</label>
-
-                    <input type="text" id="dataEntryName" name="dataEntryName" required>
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <label for="salesRepName">اسم المروج:</label>
-
-                    <select id="salesRepName" name="salesRepName" required></select>
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <label for="governorate">المحافظة:</label>
-
-                    <select id="governorate" name="governorate" required></select>
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <label for="region">المنطقة:</label>
-
-                    <input type="text" id="region" name="region" required>
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <label for="customerNameInput">اسم العميل:</label>
-
-                    <input type="text" id="customerNameInput" list="customersList" name="customerName" required>
-
-                    <datalist id="customersList"></datalist>
-
-                    <input type="hidden" id="customerCodeHidden" name="customerCode">
-
-                </div>
-
-                <div id="customerDetails" class="details-box"></div>
-
-
-
-                <div class="form-group">
-
-                    <label for="visitDate">تاريخ الزيارة:</label>
-
-                    <input type="date" id="visitDate" name="visitDate" required>
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <label for="visitTime">وقت الدخول:</label>
-
-                    <input type="time" id="visitTime" name="visitTime" required>
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <label for="exitTime">وقت الخروج:</label>
-
-                    <input type="time" id="exitTime" name="exitTime" required>
-
-                </div>
-
-                
-
-                <div class="form-group">
-
-                    <label>تقييم المتجر:</label>
-
-                    <div class="star-rating" id="starRatingContainer">
-
-                        <span class="star" data-value="1">&#9733;</span>
-
-                        <span class="star" data-value="2">&#9733;</span>
-
-                        <span class="star" data-value="3">&#9733;</span>
-
-                        <span class="star" data-value="4">&#9733;</span>
-
-                        <span class="star" data-value="5">&#9733;</span>
-
-                    </div>
-
-                    <input type="hidden" id="storeRating" name="storeRating" value="0">
-
-                </div>
-
-            </div>
-
-
-
-            <div class="section">
-
-                <h2>مساحات العمل والإجراءات المتخذة</h2>
-
-                <div class="two-columns">
-
-                    <div class="column">
-
-                        <label>مساحات العمل:</label>
-
-                        <div id="workspaceStatus" class="checkbox-group"></div>
-
-                    </div>
-
-                    <div class="column">
-
-                        <label>الإجراءات المتخذة:</label>
-
-                        <div id="actionsTaken" class="checkbox-group"></div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            
-
-            <div class="section">
-
-                <h2>المقترحات</h2>
-
-                <div class="form-group">
-
-                    <label for="suggestions">المقترحات والتحسينات:</label>
-
-                    <textarea id="suggestions" name="suggestions"></textarea>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="section">
-
-                <h2>المنتجات الناقصة</h2>
-
-                <div id="missingProductsContainer">
-
-                    <div class="missing-product-item">
-
-                        <label>اختر المنتج:</label>
-
-                        <select class="missingProduct" name="missingProduct" required></select>
-
-                        <input type="hidden" class="missingProductCode" name="missingProductCode">
-
-                        <input type="hidden" class="missingProductCategory" name="missingProductCategory"> 
-
-                    </div>
-
-                </div>
-
-                <button type="button" id="addProductBtn" class="btn-add">
-
-                    <span>إضافة منتج آخر</span>
-
-                    <i class="fas fa-plus"></i>
-
-                </button>
-
-            </div>
-
-
-
-            <div class="section">
-
-                <h2>المرفقات</h2>
-
-                <div class="form-group">
-
-                    <label for="attachment">إضافة مرفق:</label>
-
-                    <input type="file" id="attachment" name="attachment">
-
-                </div>
-
-            </div>
-
-
-
-            <button type="submit" id="submitBtn" class="btn-submit">
-
-                <span>إرسال البيانات</span>
-
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-
-                    <path d="M15.854 7.646a.5.5 0 0 0 0-.707l-6-6a.5.5 0 0 0-.707.707L14.293 7H1.5a.5.5 0 0 0 0 1h12.793l-5.146 5.146a.5.5 0 0 0 .707.707l6-6z"/>
-
-                </svg>
-
-            </button>
-
-            <div id="statusMessage"></div>
-
-        </form>
-
-    </div>
-
-    <script src="script.js"></script>
-
+    <div class="container">
+        <h1 class="form-title">نموذج تقرير الزيارة</h1>
+        <form id="visitForm">
+            <div class="section">
+                <h2>معلومات أساسية</h2>
+                <div class="form-group">
+                    <label for="dataEntryName">اسم مدخل البيانات:</label>
+                    <input type="text" id="dataEntryName" name="dataEntryName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="salesRepName">اسم المروج:</label>
+                    <select id="salesRepName" name="salesRepName" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="governorate">المحافظة:</label>
+                    <select id="governorate" name="governorate" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="region">المنطقة:</label>
+                    <input type="text" id="region" name="region" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerNameInput">اسم العميل:</label>
+                    <input type="text" id="customerNameInput" list="customersList" name="customerName" required>
+                    <datalist id="customersList"></datalist>
+                    <input type="hidden" id="customerCodeHidden" name="customerCode">
+                </div>
+                <div id="customerDetails" class="details-box"></div>
+
+                <div class="form-group">
+                    <label for="visitDate">تاريخ الزيارة:</label>
+                    <input type="date" id="visitDate" name="visitDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="visitTime">وقت الدخول:</label>
+                    <input type="time" id="visitTime" name="visitTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="exitTime">وقت الخروج:</label>
+                    <input type="time" id="exitTime" name="exitTime" required>
+                </div>
+                
+                <div class="form-group hidden">
+                    <label>تقييم المتجر:</label>
+                    <div class="star-rating" id="starRatingContainer">
+                        <span class="star" data-value="1">&#9733;</span>
+                        <span class="star" data-value="2">&#9733;</span>
+                        <span class="star" data-value="3">&#9733;</span>
+                        <span class="star" data-value="4">&#9733;</span>
+                        <span class="star" data-value="5">&#9733;</span>
+                    </div>
+                    <input type="hidden" id="storeRating" name="storeRating" value="0">
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>مساحات العمل والإجراءات المتخذة</h2>
+                <div class="two-columns">
+                    <div class="column">
+                        <label>مساحات العمل:</label>
+                        <div id="workspaceStatus" class="checkbox-group"></div>
+                    </div>
+                    <div class="column">
+                        <label>الإجراءات المتخذة:</label>
+                        <div id="actionsTaken" class="checkbox-group"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>المقترحات</h2>
+                <div class="form-group">
+                    <label for="suggestions">المقترحات والتحسينات:</label>
+                    <textarea id="suggestions" name="suggestions"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>المنتجات الناقصة</h2>
+                <div id="missingProductsContainer">
+                    <div class="missing-product-item">
+                        <label>اختر المنتج:</label>
+                        <select class="missingProduct" name="missingProduct" required></select>
+                        <input type="hidden" class="missingProductCode" name="missingProductCode">
+                        <input type="hidden" class="missingProductCategory" name="missingProductCategory"> 
+                    </div>
+                </div>
+                <button type="button" id="addProductBtn" class="btn-add">
+                    <span>إضافة منتج آخر</span>
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+
+            <div class="section hidden">
+                <h2>المرفقات</h2>
+                <div class="form-group">
+                    <label for="attachment">إضافة مرفق:</label>
+                    <input type="file" id="attachment" name="attachment">
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-submit">
+                <span>إرسال البيانات</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M15.854 7.646a.5.5 0 0 0 0-.707l-6-6a.5.5 0 0 0-.707.707L14.293 7H1.5a.5.5 0 0 0 0 1h12.793l-5.146 5.146a.5.5 0 0 0 .707.707l6-6z"/>
+                </svg>
+            </button>
+            <div id="statusMessage"></div>
+        </form>
+    </div>
+    <script src="script.js"></script>
 </body>
-
 </html>
