@@ -7,8 +7,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById('visitForm');
     const statusMessage = document.getElementById('statusMessage');
     const customerDetailsDiv = document.getElementById('customerDetails');
-    const starRatingContainer = document.querySelector('.star-rating');
-    const starRatingInput = document.getElementById('storeRating');
     const customerNameInput = document.getElementById('customerNameInput');
     const customersDatalist = document.getElementById('customersList');
     const submitBtn = document.getElementById('submitBtn');
@@ -186,46 +184,50 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    const stars = starRatingContainer.querySelectorAll('span');
+    /* --- Star Rating code commented out as per user's request to hide the section --- */
+    // const starRatingContainer = document.querySelector('.star-rating');
+    // const starRatingInput = document.getElementById('storeRating');
+    // const stars = starRatingContainer.querySelectorAll('span');
     
-    starRatingContainer.addEventListener('click', function(e) {
-        if (e.target.tagName === 'SPAN') {
-            const value = e.target.dataset.value;
-            starRatingInput.value = value;
-            
-            stars.forEach(star => {
-                if (parseInt(star.dataset.value) <= parseInt(value)) {
-                    star.classList.add('active');
-                } else {
-                    star.classList.remove('active');
-                }
-            });
-        }
-    });
+    // starRatingContainer.addEventListener('click', function(e) {
+    //     if (e.target.tagName === 'SPAN') {
+    //         const value = e.target.dataset.value;
+    //         starRatingInput.value = value;
+    //         
+    //         stars.forEach(star => {
+    //             if (parseInt(star.dataset.value) <= parseInt(value)) {
+    //                 star.classList.add('active');
+    //             } else {
+    //                 star.classList.remove('active');
+    //             }
+    //         });
+    //     }
+    // });
 
-    starRatingContainer.addEventListener('mouseover', function(e) {
-        if (e.target.tagName === 'SPAN') {
-            const value = e.target.dataset.value;
-            stars.forEach(star => {
-                if (parseInt(star.dataset.value) <= parseInt(value)) {
-                    star.style.color = 'var(--rating-color)';
-                } else {
-                    star.style.color = '';
-                }
-            });
-        }
-    });
+    // starRatingContainer.addEventListener('mouseover', function(e) {
+    //     if (e.target.tagName === 'SPAN') {
+    //         const value = e.target.dataset.value;
+    //         stars.forEach(star => {
+    //             if (parseInt(star.dataset.value) <= parseInt(value)) {
+    //                 star.style.color = 'var(--rating-color)';
+    //             } else {
+    //                 star.style.color = '';
+    //             }
+    //         });
+    //     }
+    // });
 
-    starRatingContainer.addEventListener('mouseout', function(e) {
-        const activeValue = starRatingInput.value;
-        stars.forEach(star => {
-            if (parseInt(star.dataset.value) <= parseInt(activeValue)) {
-                star.style.color = 'var(--rating-color)';
-            } else {
-                star.style.color = '';
-            }
-        });
-    });
+    // starRatingContainer.addEventListener('mouseout', function(e) {
+    //     const activeValue = starRatingInput.value;
+    //     stars.forEach(star => {
+    //         if (parseInt(star.dataset.value) <= parseInt(activeValue)) {
+    //             star.style.color = 'var(--rating-color)';
+    //         } else {
+    //             star.style.color = '';
+    //         }
+    //     });
+    // });
+    /* --- End of commented out code --- */
     
     function submitFormData(latitude, longitude) {
         isSubmitting = true;
